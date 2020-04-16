@@ -100,13 +100,13 @@ data = data + bsize*(binno);
 
 while (i < bsize){
 	// Flagging
-        if((data[i]==-128) || (data[i] == 127)){
+        if((data[i]==0) || (data[i] == 256)){
 		i += offset;
         }else{
 		// Store data not flagged into separate array
                 not_flagged_data[i] = data[i];
 		atomicAdd( &effsize, 1 );
-		atomicAdd(&temphist[data[i] + 128], 1);
+		atomicAdd(&temphist[data[i]], 1);
 		i += offset;
 	}
 }
@@ -140,11 +140,11 @@ if (j%2 == 0){
         for ( i=0; i<(256); i++){
                 c = c + hist[i];
                 if (c==d){
-                        *(med+binno) =(float)( (2*(i) + 1)*0.5 - 128 );
+                        *(med+binno) =(float)( (2*(i) + 1)*0.5 );
                         flag = 1;
                         break;
                 }else if (c>d){
-                        *(med+binno) = (i - 128);
+                        *(med+binno) = (i);
                         break;
                 }else
                         continue;
@@ -156,7 +156,7 @@ if (j%2 == 0){
         for ( i=0; i<(256); i++){
                 c = c + hist[i];
                 if (c >= d){
-                        *(med+binno) = i - 128;
+                        *(med+binno) = i;
                         break;
                 }
         }
@@ -283,7 +283,7 @@ mad = d_mad[tid];
 med = d_med[tid];
 
 for( i=lw; i<up; i++){
-	if ( (abs(d_data[i]) > thresh) || (d_data[i] == -128) || (d_data[i] == 127)  ){
+	if ( (abs(d_data[i]) > thresh) || (d_data[i] == 0) || (d_data[i] == 255)  ){
         	if(dop == 0){
 	                d_data[i] = 0;
 	        }else if(dop == 1){
